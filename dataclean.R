@@ -7,7 +7,7 @@ library(glmnet)
 library(readtext)
 
 # reading the data
-setwd("D:/Documenten/Desktop/Data_Mining_2019_Assignment2")
+setwd(getwd())
 
 
 # RDF =Read Files in Directory returns a datadrame of inputfiles given a directory
@@ -22,7 +22,7 @@ rdf = function(dir, label){
      content = readtext(file_list[i])
      dataset <- rbind(dataset, cbind(content,label))
   }
-  setwd("D:/Documenten/Desktop/Data_Mining_2019_Assignment2")
+  setwd(getwd())
   return(dataset)
 }
 
