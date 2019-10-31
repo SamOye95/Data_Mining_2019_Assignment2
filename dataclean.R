@@ -1,10 +1,14 @@
 #r packages
-#install.packages(c("glmnet", "rpart", "randomForest","tm","readtext"))
+#install.packages(c("glmnet", "rpart", "randomForest","tm","readtext", "SnowballC"))
 library(rpart)
 library(randomForest)
 library(tm)
 library(glmnet)
 library(readtext)
+library(SnowballC)
+library(RWeka)
+
+
 
 # reading the data
 setwd(getwd())
@@ -22,7 +26,10 @@ rdf = function(dir, label){
      content = readtext(file_list[i])
      dataset <- rbind(dataset, cbind(content,label))
   }
-  setwd(getwd())
+  setwd("..")
+  setwd("..")
+  setwd("..")
+  setwd("..")
   return(dataset)
 }
 
@@ -55,8 +62,8 @@ read.all.data = function(){
   return(dat)
 }
 #returns a cleaned document term matrix.
-clean.data= function(data){
-  CORP = Corpus(VectorSource(data))
+clean.data= function(data,tokenizer){
+  CORP = VCorpus(VectorSource(data))
   
   #cleaned corpus
   cl.co = tm_map(CORP, content_transformer(tolower))
@@ -64,10 +71,38 @@ clean.data= function(data){
   cl.co = tm_map(cl.co, removePunctuation)
   cl.co = tm_map(cl.co, removeWords, c("the", "and", stopwords("english")))
   cl.co = tm_map(cl.co, stripWhitespace)
-  cl.co = as.matrix(DocumentTermMatrix(cl.co))
+  cl.co = tm_map(cl.co, stemDocument, language = "english")
+ # cl.co = DocumentTermMatrix(cl.co)
+  cl.co = DocumentTermMatrix(cl.co, control = list(tokenize = tokenizer,weighting = weightTfIdf))
   
   return(cl.co)
 }
+BigramTokenizer <-
+  function(x)
+    unlist(lapply(ngrams(words(x), 2), paste, collapse = " "), use.names = FALSE)
 
+UnigramTokenizer <-
+  function(x)
+    unlist(lapply(ngrams(words(x), 1), paste, collapse = " "), use.names = FALSE)
+
+dtm_alldata = function(){
+  data = read.all.data()
+  Unigram <<- clean.data(data$text, UnigramTokenizer)
+  Bigram  <<- clean.data(data$text, BigramTokenizer)
+  
+  Unigramdf =data.frame(as.matrix(Unigram))
+  Bigramdf  = data.frame(as.matrix(Bigram))
+  
+  Unigramdftrain <<- Unigramdf[1:640,]
+  Unigramdftest  <<- Unigramdf[641:800,]
+  
+  Bigramdftrain <<-  Bigramdf[1:640,]
+  Bigramdftest  <<-  Bigramdf[641:800,]
+  
+  trainlabels <<- data$label[1:640]
+  testlabels  <<- data$label[641:800]
+}
+
+dtm_alldata()
 
 

@@ -15,6 +15,7 @@ train.logres <- function(train, train.labels){
                             train.labels,
                             family="binomial",
                             type.measure="class")
+  return(train.glmnet)
 }
 
 predict.logres <- function(model,test){
@@ -25,3 +26,8 @@ predict.logres <- function(model,test){
                                 type="class")
   
 }
+lr_unimodel = train.logres(Unigramdftrain, trainlabels)
+lr_bimodel = train.logres(Bigramdftrain, trainlabels)
+
+result_lr_uni = table(testlabels, predict.logres(lr_unimodel, Unigramdftest))
+result_lr_bi = table(testlabels, predict.logres(lr_bimodel, Bigramdftest))

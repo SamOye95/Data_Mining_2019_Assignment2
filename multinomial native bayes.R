@@ -32,3 +32,8 @@ predict.mnb <-
     logprobs <- logprobs+matrix(nrow=N,ncol=nclass,log(model$prior),byrow=T)
     classlabels[max.col(logprobs)]
   }
+
+
+mnb.model <-train.mnb(, data$label[1:640])
+#mnb.pred <- predict.mnb(mnb.model, testdata)
+#table(mnb.pred, data$label[641:800])
