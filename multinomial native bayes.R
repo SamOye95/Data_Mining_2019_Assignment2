@@ -32,8 +32,18 @@ predict.mnb <-
     logprobs <- logprobs+matrix(nrow=N,ncol=nclass,log(model$prior),byrow=T)
     classlabels[max.col(logprobs)]
   }
-
-
-mnb.model <-train.mnb(, data$label[1:640])
-#mnb.pred <- predict.mnb(mnb.model, testdata)
-#table(mnb.pred, data$label[641:800])
+mnbtest = function(){
+  
+  bidata = Bigramdftrain[ row.names(data.frame( tail(sort(colSums(Bigramdftrain) ),1000)))]
+  unidata = Unigramdftrain[ row.names(data.frame( tail(sort(colSums(Unigramdftrain) ),1000)))]
+  
+  mnb.model.uni =train.mnb(unidata, trainlabels)
+  cat("uni done\n")
+  mnb.model.bi =train.mnb(bidata, trainlabels)
+  cat("bi done")
+  
+  result.mnb.uni <<-table( predict.mnb( mnb.model.uni,as.matrix( Unigramdftest[colnames(unidata)])) , testlabels)
+  result.mnb.bi  <<- table ( predict.mnb( mnb.model.bi, as.matrix(Bigramdftest[colnames(bidata)])), testlabels)
+  
+}
+mnbtest()

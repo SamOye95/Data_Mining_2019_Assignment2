@@ -72,23 +72,23 @@ clean.data= function(data,tokenizer){
   cl.co = tm_map(cl.co, removeWords, c("the", "and", stopwords("english")))
   cl.co = tm_map(cl.co, stripWhitespace)
   cl.co = tm_map(cl.co, stemDocument, language = "english")
- # cl.co = DocumentTermMatrix(cl.co)
+  #cl.co = DocumentTermMatrix(cl.co, control = list(tokenize = tokenizer))
   cl.co = DocumentTermMatrix(cl.co, control = list(tokenize = tokenizer,weighting = weightTfIdf))
   
   return(cl.co)
 }
 BigramTokenizer <-
   function(x)
-    unlist(lapply(ngrams(words(x), 2), paste, collapse = " "), use.names = FALSE)
+    unlist(lapply(ngrams(words(x), 2), paste, collapse = ""), use.names = FALSE)
 
 UnigramTokenizer <-
   function(x)
-    unlist(lapply(ngrams(words(x), 1), paste, collapse = " "), use.names = FALSE)
+    unlist(lapply(ngrams(words(x), 1), paste, collapse = ""), use.names = FALSE)
 
 dtm_alldata = function(){
   data = read.all.data()
-  Unigram <<- clean.data(data$text, UnigramTokenizer)
-  Bigram  <<- clean.data(data$text, BigramTokenizer)
+  Unigram = clean.data(data$text, UnigramTokenizer)
+  Bigram  = clean.data(data$text, BigramTokenizer)
   
   Unigramdf =data.frame(as.matrix(Unigram))
   Bigramdf  = data.frame(as.matrix(Bigram))
